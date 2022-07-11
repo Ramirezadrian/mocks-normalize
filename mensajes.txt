@@ -1,0 +1,35 @@
+[
+  {
+    "author": {
+      "id": "aeramirez86@gmail.com",
+      "nombre": "adrian",
+      "apellido": "ramirez",
+      "edad": "23",
+      "alias": "ramma",
+      "avatar": "asdqwdsdasd/asda.com"
+    },
+    "text": "hola"
+  },
+  {
+    "author": {
+      "id": "adriancito@gmail.com",
+      "nombre": "juan",
+      "apellido": "toto",
+      "edad": "55",
+      "alias": "eltotito",
+      "avatar": "asdfasfd"
+    },
+    "text": "soy el totito"
+  },
+  {
+    "author": {
+      "id": "adriancito@gmail.com",
+      "nombre": "juan",
+      "apellido": "toto",
+      "edad": "55",
+      "alias": "eltotito",
+      "avatar": "asdfasfd"
+    },
+    "text": "lalalalala"
+  }
+]

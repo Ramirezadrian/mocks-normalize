@@ -1,6 +1,9 @@
 const express = require('express')
 const {Server: HttpServer} =require('http')
 const {Server: IOServer} = require('socket.io')
+const faker = require('faker')
+
+faker.locale = 'es'
 
 const app = express()
 const httpServer = new HttpServer(app)
@@ -17,16 +20,17 @@ app.use(express.static('./public'))
 //const { Router } = express
 const Contenedor = require('./contenedor.js')
 const contenedor = new Contenedor('products.txt')
+const mensajes = new Contenedor('mensajes.txt')
 
 
 const messages = []
 app.get('/products', async (req,res) =>{
   const products = await contenedor.getAll()
-
+ 
   const data ={
     products
   }
-  return res.json(products)
+  return res.json(data)
 
 }) 
 
@@ -36,6 +40,9 @@ app.get('/', async (req,res) =>{
 
 
 })
+
+
+
 
 app.post('/', async (req, res) => {
   const product = {
@@ -62,23 +69,43 @@ server.on('error', error => console.log(`Error en servidor: ${error}`))
 io.on('connection', async (socket) => {
   console.log('Nuevo cliente conectado')
 
-  const data = await contenedor.getAll()
+  //const data = await contenedor.getAll()
+  const productos = []
+
+  for (let i = 0; i<5; i++){
+    productos.push({title: faker.commerce.productName(), price: faker.commerce.price(), thumbnail: faker.image.image()})
+  }
+  const data = productos
+
+  const msgs = await mensajes.getAll()
   socket.emit('productos', data)
   
-  socket.emit('join', messages)
+  socket.emit('join', msgs)
    
   socket.on('messageInput', data => {
 
-    const now = new Date()
+   
 
-    const message = {
+/*     const message = {
       user: data.user,
       date: `${now.getDay()}/${now.getMonth()}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
       text: data.text
-    }
-     
-    messages.push(message)
-    console.log(messages)
+    } */
+
+    const message = {
+      author: {
+        id: data.author.id,
+        nombre: data.author.nombre,
+        apellido: data.author.apellido,
+        edad: data.author.edad,
+        alias: data.author.alias,
+        avatar: data.author.avatar
+      },
+      text : data.text
+   }
+    mensajes.save(message)
+   // messages.push(message)
+    console.log(message)
    socket.emit('myMessage', message)
     
     socket.broadcast.emit('message', message)

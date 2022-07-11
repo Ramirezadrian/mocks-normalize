@@ -17,14 +17,14 @@ class Contenedor{
             data = []
         }
 
-        const lastProduct = data[data.length - 1] //conozco la posicion del ultimo elemento
+     /*    const lastProduct = data[data.length - 1] //conozco la posicion del ultimo elemento
 
         let id = 1
 
         if (lastProduct) { // si hay productos le sumo uno al id
              id = lastProduct.id + 1
         }
-        object.id = id
+        object.id = id */
 
         data.push(object) //agrego producto
 

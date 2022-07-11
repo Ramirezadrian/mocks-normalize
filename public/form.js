@@ -15,7 +15,7 @@ socket.on('productos', data =>{
     const prodTemplate = `
          
          <tr>
-         <th scope="row">${prod.id}</th>
+         
          <td>${prod.title}</td>
          <td>${prod.price}</td>
          <td><img src="${prod.thumbnail}"></td>
@@ -32,7 +32,7 @@ socket.on('join', data =>{
   const mensajes = data
   .map(men => {
     const mensTemplate = `
-    <span style = "color:blue; font-weight: bold">${men.user}</span><span style="color:brown"> ${men.date}:</span><span style ="color:green; font-style: italic"> ${men.text}</span><br>
+    <span style = "color:blue; font-weight: bold">${men.author.id}</span><span style="color:brown"> ${men.author.alias}:</span><span style ="color:green; font-style: italic"> ${men.text}</span><br>
     `
     return mensTemplate
   })
@@ -44,10 +44,17 @@ socket.on('join', data =>{
 sendMessage.addEventListener('click', (e) => {
   e.preventDefault()
  const message = {
-   user: email.value,
-   text :messageInput.value
+    author: {
+      id: email.value,
+      nombre: nombre.value,
+      apellido: apellido.value,
+      edad: edad.value,
+      alias: alias.value,
+      avatar: avatar.value
+    },
+    text :messageInput.value
  }
- 
+
   socket.emit('messageInput', message)
   messageInput.value = ''
 })
@@ -55,7 +62,7 @@ sendMessage.addEventListener('click', (e) => {
 socket.on('message', data => {
   
   const message = `
-  <span style = "color:blue; font-weight: bold">${data.user}</span><span style="color:brown"> ${data.date}:</span><span style ="color:green; font-style: italic"> ${data.text}</span><br>
+  <span style = "color:blue; font-weight: bold">${data.author.id}</span><span style="color:brown"> ${data.author.alias}:</span><span style ="color:green; font-style: italic"> ${data.text}</span><br>
   `
 
   messageContainer.innerHTML += message
@@ -63,7 +70,7 @@ socket.on('message', data => {
 
 socket.on('myMessage', data => {
   const message = `
-  <span style = "color:blue; font-weight: bold">${data.user}</span><span style="color:brown"> ${data.date}:</span><span style ="color:green; font-style: italic"> ${data.text}</span><br>
+  <span style = "color:blue; font-weight: bold">${data.author.id}</span><span style="color:brown"> ${data.author.alias}:</span><span style ="color:green; font-style: italic"> ${data.text}</span><br>
   `
 
   messageContainer.innerHTML += message
