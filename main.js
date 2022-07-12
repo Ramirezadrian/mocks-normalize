@@ -3,6 +3,8 @@ const {Server: HttpServer} =require('http')
 const {Server: IOServer} = require('socket.io')
 const faker = require('faker')
 
+const normalizr = require('normalizr')
+
 faker.locale = 'es'
 
 const app = express()
@@ -20,7 +22,17 @@ app.use(express.static('./public'))
 //const { Router } = express
 const Contenedor = require('./contenedor.js')
 const contenedor = new Contenedor('products.txt')
-const mensajes = new Contenedor('mensajes.txt')
+const mensajes = new Contenedor('mensajes.json')
+const dMsgs = new Contenedor('dMsgs.json')
+const NMsgs = new Contenedor('NMsgs.json')
+
+//const authorSchema = new normalizr.schema.Entity('author')
+const authorSchema = new normalizr.schema.Entity('author',{},{idAttribute: 'email'})
+const textSchema = new normalizr.schema.Entity('text')
+const msgSchema = new normalizr.schema.Entity('msg',{
+  author: authorSchema,
+  text: [textSchema]
+})
 
 
 const messages = []
@@ -70,14 +82,26 @@ io.on('connection', async (socket) => {
   console.log('Nuevo cliente conectado')
 
   //const data = await contenedor.getAll()
-  const productos = []
 
-  for (let i = 0; i<5; i++){
-    productos.push({title: faker.commerce.productName(), price: faker.commerce.price(), thumbnail: faker.image.image()})
-  }
-  const data = productos
+
+
 
   const msgs = await mensajes.getAll()
+
+
+const normalizedMsg = normalizr.normalize(msgs, msgSchema)
+
+NMsgs.save(normalizedMsg)
+
+
+  
+const productos = []
+
+for (let i = 0; i<5; i++){
+  productos.push({title: faker.commerce.productName(), price: faker.commerce.price(), thumbnail: faker.image.image()})
+}
+const data = productos
+
   socket.emit('productos', data)
   
   socket.emit('join', msgs)
@@ -85,23 +109,16 @@ io.on('connection', async (socket) => {
   socket.on('messageInput', data => {
 
    
-
-/*     const message = {
-      user: data.user,
-      date: `${now.getDay()}/${now.getMonth()}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
-      text: data.text
-    } */
-
     const message = {
-      author: {
-        id: data.author.id,
-        nombre: data.author.nombre,
-        apellido: data.author.apellido,
-        edad: data.author.edad,
-        alias: data.author.alias,
-        avatar: data.author.avatar
+      "author": {
+        "email": data.author.email,
+        "nombre": data.author.nombre,
+        "apellido": data.author.apellido,
+        " edad": data.author.edad,
+        "alias": data.author.alias,
+        "avatar": data.author.avatar
       },
-      text : data.text
+      " text": data.text
    }
     mensajes.save(message)
    // messages.push(message)
